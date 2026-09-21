@@ -1,0 +1,22 @@
+{
+  "name": "tasknest",
+  "version": "1.0.0",
+  "description": "A task management API where users can create accounts, log in, and perform CRUD operations on their own tasks.",
+  "license": "ISC",
+  "author": "Harsh",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.1",
+    "nodemon": "^3.1.14"
+  }
+}
