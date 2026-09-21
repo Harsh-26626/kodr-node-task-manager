@@ -1,0 +1,103 @@
+# TaskNest
+
+A task management REST API where users can create accounts, log in, and perform CRUD operations on their own tasks. Built with Node.js, Express, and MongoDB, with JWT-based authentication and ownership checks so users can only access their own tasks.
+
+## Features
+
+- User signup and login with hashed passwords (bcrypt)
+- JWT-based authentication
+- Create, read, update, and delete tasks
+- Task ownership enforcement (users can only view/edit/delete their own tasks)
+- Request validation for signup, login, and task fields
+- CORS configuration
+
+## Tech Stack
+
+- **Runtime:** Node.js (ES Modules)
+- **Framework:** Express 5
+- **Database:** MongoDB with Mongoose
+- **Auth:** JSON Web Tokens (`jsonwebtoken`), password hashing with `bcrypt`
+- **Other:** `cors`, `dotenv`, `nodemon`
+
+## Project Structure
+
+```
+.
+├── config/
+│   ├── CORSConfig.js      # Allowed origins for CORS
+│   └── DBConfig.js        # MongoDB connection
+├── controllers/
+│   ├── AuthController.js  # Signup / login logic
+│   └── TasksController.js # Task CRUD logic
+├── middleware/
+│   ├── CheckTaskOwner.js  # Ensures a task belongs to the requesting user
+│   ├── VerifyFields.js    # Validates request bodies (auth + task fields)
+│   └── VerifyJWT.js       # Verifies the Authorization bearer token
+├── models/
+│   ├── task.js            # Task schema
+│   └── user.js            # User schema
+├── routes/
+│   ├── AuthRouter.js      # /auth routes
+│   └── TasksRouter.js     # /tasks routes
+├── server.js               # App entry point
+└── package.json
+```
+
+## Getting Started
+
+### Installation
+
+```bash
+git clone https://github.com/Harsh-26626/kodr-node-task-manager.git
+cd kodr-node-task-manager
+npm install
+```
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+PORT=3000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+### Run the server
+
+```bash
+npm start
+```
+
+The server will connect to MongoDB and start listening on the configured `PORT`.
+
+> **Note:** By default, CORS only allows requests from `localhost:3000`. Update `config/CORSConfig.js` to add other allowed origins as needed.
+
+## API Reference
+
+All request/response bodies are JSON. Task routes require a valid JWT sent as `Authorization: Bearer <token>`.
+
+### Auth
+
+| Method | Endpoint      | Description         | Body                             |
+| ------ | ------------- | -------------------- | --------------------------------- |
+| POST   | `/auth/signup` | Register a new user | `{ name, email, password }`       |
+| POST   | `/auth/login`  | Log in and get a JWT | `{ email, password }`             |
+
+**Password requirements:** at least 8 characters, with at least one uppercase letter, one lowercase letter, one number, and one special character.
+
+On successful login, the response includes an `Access Token` to be used as a bearer token on task routes.
+
+### Tasks
+
+All endpoints below require the `Authorization: Bearer <token>` header.
+
+| Method | Endpoint      | Description                          | Body                                       |
+| ------ | ------------- | ------------------------------------- | -------------------------------------------- |
+| GET    | `/tasks`       | Get all tasks belonging to the user  | —                                            |
+| POST   | `/tasks`       | Create a new task                    | `{ title, description, status? }`            |
+| GET    | `/tasks/:id`   | Get a single task by ID (must be owner) | —                                          |
+| PUT    | `/tasks/:id`   | Update a task by ID (must be owner)  | `{ title, description, status? }`            |
+| DELETE | `/tasks/:id`   | Delete a task by ID (must be owner)  | —                                            |
+
+`status` accepts `pending` or `completed` (defaults to `pending`).
